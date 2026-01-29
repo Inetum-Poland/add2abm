@@ -1,0 +1,39 @@
+name: "Assign"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - labeled
+      - unlabeled
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+  workflow_call:
+    inputs:
+      runs-on:
+        type: string
+        required: false
+
+concurrency:
+  # Here we use the repository name to avoid conflicts with other repositories
+  # Target repositories should use only `${{ github.workflow_ref }}_${{ github.ref }}`
+  group: ${{ github.workflow_ref }}_${{ github.ref }}_${{ github.repository }}
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  label:
+    name: "Label"
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/labeler@v6

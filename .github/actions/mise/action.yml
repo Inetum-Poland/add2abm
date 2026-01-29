@@ -1,0 +1,17 @@
+name: "Mise"
+description: "Mise Installer"
+
+runs:
+  using: "composite"
+  steps:
+    - uses: jdx/mise-action@main
+      with:
+        install: true
+        cache: true
+        cache_save: true
+        cache_key: "mise-{{platform}}-{{file_hash}}"
+
+    - name: Mise upgrade latest
+      shell: bash
+      run: |
+        mise up

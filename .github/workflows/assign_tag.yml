@@ -1,0 +1,131 @@
+name: "Assign"
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
+  #   branches:
+  #     - main
+  #   types:
+  #     - labeled
+  #     - unlabeled
+  #     - opened
+  #     - reopened
+  #     - synchronize
+
+  workflow_call:
+    inputs:
+      bump_default_level:
+        type: string
+        description: "Default bump level if labels are not attached [major,minor,patch]. Do nothing if it's empty"
+        required: false
+      bump_fail_if_no_level:
+        type: string
+        description: "Fail if no bump label is found"
+        required: false
+        default: "false"
+      bump_include_v:
+        type: string
+        description: "Whether to include v in tag name"
+        required: false
+        default: "true"
+      bump_latest:
+        type: string
+        description: "Whether to add `latest` tag"
+        required: false
+        default: "false"
+      bump_major:
+        type: string
+        description: "Label name for major bump (bump:major)"
+        required: false
+        default: "bumper:major"
+      bump_minor:
+        type: string
+        description: "Label name for minor bump (bump:minor)"
+        required: false
+        default: "bumper:minor"
+      bump_none:
+        type: string
+        description: "Label name for no bump (bump:none)"
+        required: false
+        default: "bumper:none"
+      bump_patch:
+        type: string
+        description: "Label name for patch bump (bump:patch)"
+        required: false
+        default: "bumper:patch"
+      bump_semver:
+        type: string
+        description: "Whether to updates major/minor release tags on a tag push. e.g. Update `v1` and `v1.2` tag when released `v1.2.3`."
+        required: false
+        default: "false"
+      bump_tag_as_email:
+        type: string
+        description: "Email address to use when creating tags"
+        required: false
+      bump_tag_as_user:
+        type: string
+        description: "Name to use when creating tags"
+        required: false
+      runs-on:
+        type: string
+        required: false
+
+concurrency:
+  # Here we use the repository name to avoid conflicts with other repositories
+  # Target repositories should use only `${{ github.workflow_ref }}_${{ github.ref }}`
+  group: ${{ github.workflow_ref }}_${{ github.ref }}_${{ github.repository }}
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  tag:
+    name: "Tag"
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/prerequisites
+        if: github.repository == 'Inetum-Poland/.github'
+      - uses: Inetum-Poland/.github/.github/actions/prerequisites@main
+        if: github.repository != 'Inetum-Poland/.github'
+
+      - uses: jwalton/gh-find-current-pr@v1
+        id: finder
+        with:
+          state: all
+
+      - id: bumper
+        uses: inetum-poland/action-bumper@v3
+        with:
+          bump_default_level: ${{ vars.bump_default_level || inputs.bump_default_level }}
+          bump_fail_if_no_level: ${{ vars.bump_fail_if_no_level || inputs.bump_fail_if_no_level }}
+          bump_include_v: ${{ vars.bump_include_v || inputs.bump_include_v }}
+          bump_latest: ${{ vars.bump_latest || inputs.bump_latest }}
+          bump_major: ${{ vars.bump_major || inputs.bump_major }}
+          bump_minor: ${{ vars.bump_minor || inputs.bump_minor }}
+          bump_none: ${{ vars.bump_none || inputs.bump_none }}
+          bump_patch: ${{ vars.bump_patch || inputs.bump_patch }}
+          bump_semver: ${{ vars.bump_semver || inputs.bump_semver }}
+          bump_tag_as_email: ${{ vars.bump_tag_as_email || inputs.bump_tag_as_email }}
+          bump_tag_as_user: ${{ vars.bump_tag_as_user || inputs.bump_tag_as_user }}
+          github_token: ${{ secrets.github_token }}
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: always() && (steps.bumper.outputs.tag_status != null) && (steps.finder.outputs.pr != null) && (steps.bumper.outputs.skip != true)
+        with:
+          header: bumper
+          number: ${{ steps.finder.outputs.pr }}
+          message: ${{ steps.bumper.outputs.tag_status }}
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: always() && (steps.bumper.outputs.tag_status == null || steps.bumper.outputs.skip == true)
+        with:
+          header: bumper
+          delete: true
+
+      #TODO(aamkye): Releaser

@@ -1,0 +1,126 @@
+name: "Verify"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+    branches:
+      - main
+  workflow_call:
+    inputs:
+      GH_APP_ID:
+        type: string
+      GH_APP_INSTALLATION_ID:
+        type: string
+      TF_INPUT:
+        type: string
+      TF_IN_AUTOMATION:
+        type: string
+      runs-on:
+        type: string
+        required: false
+      clean-runner:
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  # Here we use the repository name to avoid conflicts with other repositories
+  # Target repositories should use only `${{ github.workflow_ref }}_${{ github.ref }}`
+  group: ${{ github.workflow_ref }}_${{ github.ref }}_${{ github.repository }}
+  cancel-in-progress: true
+
+env:
+  # GH
+  GITHUB_APP_ID: ${{ (vars.GH_APP_ID || inputs.GH_APP_ID) || false }}
+  GITHUB_APP_INSTALLATION_ID: ${{ (vars.GH_APP_INSTALLATION_ID || inputs.GH_APP_INSTALLATION_ID) || false }}
+  GITHUB_APP_PEM_FILE: ${{ secrets.GH_APP_PEM_FILE || false }}
+  # TF
+  TF_INPUT: ${{ (vars.TF_INPUT || inputs.TF_INPUT) || false }}
+  TF_IN_AUTOMATION: ${{ (vars.TF_IN_AUTOMATION || inputs.TF_IN_AUTOMATION) || false }}
+  TF_TOKEN_app_terraform_io: ${{ secrets.TF_TOKEN_APP_TERRAFORM_IO || false }}
+  TFE_TOKEN: ${{ secrets.TFE_TOKEN || false }}
+  # Trivy
+  ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db:2
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  secrets:
+    name: "Secrets"
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/prerequisites
+        if: github.repository == 'Inetum-Poland/.github'
+      - uses: Inetum-Poland/.github/.github/actions/prerequisites@main
+        if: github.repository != 'Inetum-Poland/.github'
+
+      - uses: ./.github/actions/trufflehog
+        if: github.repository == 'Inetum-Poland/.github'
+      - uses: Inetum-Poland/.github/.github/actions/trufflehog@main
+        if: github.repository != 'Inetum-Poland/.github'
+
+  vulnerabilites:
+    name: "Vulnerabilites"
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/prerequisites
+        if: github.repository == 'Inetum-Poland/.github'
+      - uses: Inetum-Poland/.github/.github/actions/prerequisites@main
+        if: github.repository != 'Inetum-Poland/.github'
+
+      - uses: ./.github/actions/trivy
+        if: github.repository == 'Inetum-Poland/.github'
+      - uses: Inetum-Poland/.github/.github/actions/trivy@main
+        if: github.repository != 'Inetum-Poland/.github'
+
+  pre_commit:
+    name: "Pre-Commit"
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
+    if: github.event.pull_request.draft == false
+    steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@v1.3.1
+        if: inputs.clean-runner == true
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+          swap-storage: true
+
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/prerequisites
+        if: github.repository == 'Inetum-Poland/.github'
+      - uses: Inetum-Poland/.github/.github/actions/prerequisites@main
+        if: github.repository != 'Inetum-Poland/.github'
+
+      - uses: ./.github/actions/mise
+        if: github.repository == 'Inetum-Poland/.github'
+      - uses: Inetum-Poland/.github/.github/actions/mise@main
+        if: github.repository != 'Inetum-Poland/.github'
+
+      - uses: ./.github/actions/pre_commit
+        if: github.repository == 'Inetum-Poland/.github'
+      - uses: Inetum-Poland/.github/.github/actions/pre_commit@main
+        if: github.repository != 'Inetum-Poland/.github'

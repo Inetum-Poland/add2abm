@@ -1,0 +1,55 @@
+name: "Verify"
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+      - ready_for_review
+  workflow_call:
+    inputs:
+      runs-on:
+        type: string
+        required: false
+
+# https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/controlling-permissions-for-github_token#defining-access-for-the-github_token-permissions
+permissions:
+  pull-requests: write
+  statuses: write
+  # Default
+  actions: read
+  attestations: read
+  checks: read
+  contents: read
+  deployments: read
+  discussions: read
+  id-token: none
+  issues: read
+  packages: read
+  pages: read
+  repository-projects: read
+  security-events: read
+
+jobs:
+  semantic_pr:
+    name: "Semantic PR"
+    runs-on: ${{ inputs.runs-on || 'ubuntu-latest' }}
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: ./.github/actions/prerequisites
+        if: github.repository == 'Inetum-Poland/.github'
+      - uses: Inetum-Poland/.github/.github/actions/prerequisites@main
+        if: github.repository != 'Inetum-Poland/.github'
+
+      - uses: ./.github/actions/semantic_pr
+        if: github.repository == 'Inetum-Poland/.github'
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: Inetum-Poland/.github/.github/actions/semantic_pr@main
+        if: github.repository != 'Inetum-Poland/.github'
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

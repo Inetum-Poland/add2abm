@@ -1,18 +1,18 @@
 name: "Assign"
 
 on:
-  # push:
-  #   branches:
-  #     - main
-  # pull_request:
-  #   branches:
-  #     - main
-  #   types:
-  #     - labeled
-  #     - unlabeled
-  #     - opened
-  #     - reopened
-  #     - synchronize
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+    types:
+      - labeled
+      - unlabeled
+      - opened
+      - reopened
+      - synchronize
 
   workflow_call:
     inputs:

@@ -24,7 +24,7 @@ REVISION=20250805
 
 # CONFIRMATION: ————————————————————————————————————————————————————————————————————————————————————
 
-printf 'Add2ABM script by Inetum\nRevision: %s\nWould you like to run it now? (y/n): ' ${REVISION}
+printf 'Add2ABM script by Inetum Poland\nRevision: %s\nWould you like to run it now? (y/n): ' ${REVISION}
 read -r ANSWER
 case "${ANSWER}" in
 	[Yy]*)

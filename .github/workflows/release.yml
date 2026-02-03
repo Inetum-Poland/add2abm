@@ -1,0 +1,101 @@
+name: "Release Script"
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  PROJECT_NAME: Add2ABM
+  SCRIPT_NAME: add2abm.sh
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Resolve and verify release tag
+        run: |
+          git fetch --tags --force
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG=$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n 1)
+            if [ -z "$TAG" ]; then
+              echo "::error::No SemVer tags found"
+              exit 1
+            fi
+            echo "Manual run: using latest tag $TAG"
+          else
+            TAG="${GITHUB_REF_NAME}"
+            echo "Tag push run: using tag $TAG"
+          fi
+
+          if ! echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Tag $TAG is not strict SemVer (vMAJOR.MINOR.PATCH)"
+            exit 1
+          fi
+
+          latest_tag=$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' | sort -V | tail -n 1)
+
+          if [ "$TAG" != "$latest_tag" ]; then
+            echo "::error::Tag $TAG is not the latest SemVer tag"
+            exit 1
+          fi
+
+          echo "RELEASE_TAG=$TAG" >> "$GITHUB_ENV"
+
+      - name: Verify script exists
+        run: |
+          test -f "$SCRIPT_NAME" || (echo "$SCRIPT_NAME not found" && exit 1)
+
+      - name: Make script executable
+        run: chmod +x "$SCRIPT_NAME"
+
+      - name: Calculate checksums
+        id: checksums
+        run: |
+          md5sum "$SCRIPT_NAME" > "$SCRIPT_NAME.md5"
+          sha256sum "$SCRIPT_NAME" > "$SCRIPT_NAME.sha256"
+
+          echo "MD5=$(cut -d' ' -f1 "$SCRIPT_NAME.md5")" >> "$GITHUB_OUTPUT"
+          echo "SHA256=$(cut -d' ' -f1 "$SCRIPT_NAME.sha256")" >> "$GITHUB_OUTPUT"
+
+      - name: Get latest release
+        id: latest
+        uses: pozetroninc/github-action-get-latest-release@v0.8.0 # v0.8.0
+        with:
+          repository: ${{ github.repository }}
+          excludes: draft
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ vars.PROJECT_NAME }} ${{ env.RELEASE_TAG }}
+          tag_name: ${{ env.RELEASE_TAG }}
+          body: |
+            ## Notes
+            This is a version of **${{ vars.PROJECT_NAME }}** released by GitHub Actions.
+
+            #### Full Changelog: [${{ steps.latest.outputs.release }}...${{ env.RELEASE_TAG }}](${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.latest.outputs.release }}...${{ env.RELEASE_TAG }})
+            <sup>Contributed by @bsojka</sup>
+            ___
+            ## Checksums
+            #### SHA256 checksum of `${{ env.SCRIPT_NAME }}`:
+            ```
+            ${{ steps.checksums.outputs.SHA256 }}
+            ```
+            #### MD5 checksum of `${{ env.SCRIPT_NAME }}`:
+            ```
+            ${{ steps.checksums.outputs.MD5 }}
+            ```
+          files: |
+            ${{ env.SCRIPT_NAME }}
+            ${{ env.SCRIPT_NAME }}.md5
+            ${{ env.SCRIPT_NAME }}.sha256

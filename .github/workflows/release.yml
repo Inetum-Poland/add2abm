@@ -78,11 +78,11 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: ${{ vars.PROJECT_NAME }} ${{ env.RELEASE_TAG }}
+          name: ${{ env.PROJECT_NAME }} ${{ env.RELEASE_TAG }}
           tag_name: ${{ env.RELEASE_TAG }}
           body: |
             ## Notes
-            This is a version of **${{ vars.PROJECT_NAME }}** released by GitHub Actions.
+            This is a version of **${{ env.PROJECT_NAME }}** released by GitHub Actions.
 
             #### Full Changelog: [${{ steps.latest.outputs.release }}...${{ env.RELEASE_TAG }}](${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.latest.outputs.release }}...${{ env.RELEASE_TAG }})
             <sup>Contributed by @bsojka</sup>

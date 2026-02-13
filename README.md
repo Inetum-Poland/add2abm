@@ -1,8 +1,11 @@
 # Add2ABM
 
-![Platform](https://img.shields.io/badge/platform-macOS-lightgrey)
-![Shell](https://img.shields.io/badge/shell-bash-green)
-![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
+[![License](https://img.shields.io/github/license/Inetum-Poland/add2abm?logo=apache&color=purple)](https://github.com/Inetum-Poland/add2abm?tab=License-1-ov-file#)
+[![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)](#)
+[![minOS](https://img.shields.io/badge/macOS-14.0%2B-success)](#)
+[![MDM Agnostic](https://img.shields.io/badge/MDM-agnostic-blueviolet)](#)
+[![GitHub Release](https://img.shields.io/github/v/release/Inetum-Poland/add2abm)](https://github.com/Inetum-Poland/add2abm/releases)
+[![Shell](https://img.shields.io/badge/shell-bash-green)](#)
 
 **Add2ABM is a macOS recovery-time utility script created by Inetum Poland that re-triggers Setup Assistant to allow an already configured Mac to be added to Apple Business Manager[^1] (ABM) or Apple School Manager[^2] (ASM) without erasing the disk.**
 
@@ -62,7 +65,11 @@ Run **from macOS Recovery only**:
 2. Open **Utilities → Terminal**
 3. Execute the script from a trusted source. The following command provides the shortest command for convenient typing in Recovery Terminal:
 ```sh
-sh <(curl -s script_hosting_fqdn/add2abm)
+sh <(curl -s add2abm.inetum.zone)
+```
+or if you’re hosting it yourself:
+```sh
+sh <(curl -s script_hosting_fqdn/add2abm.sh)
 ```
 The script is fully interactive and prompts before making any changes.
 
@@ -71,10 +78,12 @@ Running the script from a logged–in macOS session is **not supported**.
 > [!TIP]
 > For security reasons, before executing the script you can verify its checksum by running
 > ```sh
+> curl -s add2abm.inetum.zone|md5
 > curl -s script_hosting_fqdn/add2abm|md5
 > ```
 > or
 > ```sh
+> curl -s add2abm.inetum.zone|sha256
 > curl -s script_hosting_fqdn/add2abm|sha256
 > ```
 > You can find the latest script checksums in [Releases](https://github.com/Inetum-Poland/add2abm/releases).

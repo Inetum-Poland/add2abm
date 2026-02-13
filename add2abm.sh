@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ADD 2 ABM
+# Add2ABM
 
 # Copyright 2026 Inetum Polska Sp. z o.o.
 #
@@ -20,11 +20,12 @@
 # Revision: 20250805
 REVISION=20250805
 
-# Usage: sh <(curl -s script_hosting_fqdn/add2abm)
+# Usage: sh <(curl -s add2abm.inetum.zone)
+#        sh <(curl -s script_hosting_fqdn/add2abm)
 
 # CONFIRMATION: ————————————————————————————————————————————————————————————————————————————————————
 
-printf 'Add2ABM script by Inetum Poland\nRevision: %s\nWould you like to run it now? (y/n): ' ${REVISION}
+printf 'Add2ABM script by Inetum Polska Sp. z o.o.\nRevision: %s\nWould you like to run it now? (y/n): ' ${REVISION}
 read -r ANSWER
 case "${ANSWER}" in
 	[Yy]*)

@@ -3,7 +3,7 @@ name: "Release Script"
 on:
   push:
     tags:
-      - "v*"
+      - "v*.*.*"
   workflow_dispatch:
 
 permissions:
@@ -11,8 +11,9 @@ permissions:
   id-token: write
 
 env:
-  PROJECT_NAME: Add2ABM
-  SCRIPT_NAME: add2abm.sh
+  PROJECT_NAME: ${{ vars.PROJECT_NAME }}
+  SCRIPT_NAME: ${{ vars.SCRIPT_NAME }}
+  HOSTING_URL: ${{ vars.HOSTING_URL }}
 
 jobs:
   release:
@@ -84,9 +85,9 @@ jobs:
 
       - name: Publish to S3
         run: |
-          aws s3 cp "${{ env.SCRIPT_NAME }}" "s3://add2abm.inetum.zone/${{ env.SCRIPT_NAME }}"
-          aws s3 cp "${{ env.SCRIPT_NAME }}.md5" "s3://add2abm.inetum.zone/${{ env.SCRIPT_NAME }}.md5"
-          aws s3 cp "${{ env.SCRIPT_NAME }}.sha256" "s3://add2abm.inetum.zone/${{ env.SCRIPT_NAME }}.sha256"
+          aws s3 cp "${{ env.SCRIPT_NAME }}" "s3://${{ env.HOSTING_URL }}/${{ env.SCRIPT_NAME }}"
+          aws s3 cp "${{ env.SCRIPT_NAME }}.md5" "s3://${{ env.HOSTING_URL }}/${{ env.SCRIPT_NAME }}.md5"
+          aws s3 cp "${{ env.SCRIPT_NAME }}.sha256" "s3://${{ env.HOSTING_URL }}/${{ env.SCRIPT_NAME }}.sha256"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -96,9 +97,17 @@ jobs:
           body: |
             ## Notes
             This is a version of **${{ env.PROJECT_NAME }}** released by GitHub Actions.
+            It has been automatically uploaded to [`${{ env.HOSTING_URL }}`](http://${{ env.HOSTING_URL }}).
 
+            ## Usage
+            Run the following from **macOS Recovery**:
+            ```sh
+            sh <(curl -s ${{ env.HOSTING_URL }})
+            ```
+            For additional instructions, read [README](${{ github.server_url }}/${{ github.repository }}).
+            ___
             #### Full Changelog: [${{ steps.latest.outputs.release }}...${{ env.RELEASE_TAG }}](${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.latest.outputs.release }}...${{ env.RELEASE_TAG }})
-            <sup>Contributed by @bsojka</sup>
+            <sup>Contributed by ${{ vars.CONTRIBUTORS }}</sup>
             ___
             ## Checksums
             #### SHA256 checksum of `${{ env.SCRIPT_NAME }}`:

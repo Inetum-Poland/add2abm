@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 env:
   PROJECT_NAME: Add2ABM
@@ -74,6 +75,18 @@ jobs:
           repository: ${{ github.repository }}
           token: ${{ secrets.GITHUB_TOKEN }}
           excludes: draft
+
+      - uses: Moulick/configure-multiple-aws-roles@85a5f3c1c18bd985ef5b6f922745d7d26f2e3ece # v4.1.1
+        with:
+          role-to-assume: arn:aws:iam::932459504670:role/com.inetum.github.oidc
+          role-session-name: ${{ github.run_id }}-${{ github.sha }}
+          aws-region: eu-north-1
+
+      - name: Publish to S3
+        run: |
+          aws s3 cp "${{ env.SCRIPT_NAME }}" "s3://add2abm.inetum.zone/${{ env.SCRIPT_NAME }}"
+          aws s3 cp "${{ env.SCRIPT_NAME }}.md5" "s3://add2abm.inetum.zone/${{ env.SCRIPT_NAME }}.md5"
+          aws s3 cp "${{ env.SCRIPT_NAME }}.sha256" "s3://add2abm.inetum.zone/${{ env.SCRIPT_NAME }}.sha256"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

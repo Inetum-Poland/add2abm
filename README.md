@@ -1,9 +1,9 @@
 # Add2ABM
 
-[![License](https://img.shields.io/github/license/Inetum-Poland/add2abm?logo=apache&color=purple)](https://github.com/Inetum-Poland/add2abm?tab=License-1-ov-file#)
+[![License: Apache 2.0](https://img.shields.io/github/license/Inetum-Poland/add2abm?logo=apache&color=purple)](https://github.com/Inetum-Poland/add2abm?tab=Apache-2.0-1-ov-file#)
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)](#)
 [![minOS](https://img.shields.io/badge/macOS-14.0%2B-success)](#)
-[![MDM Agnostic](https://img.shields.io/badge/MDM-agnostic-blueviolet)](#)
+[![MDM: Agnostic](https://img.shields.io/badge/MDM-agnostic-blueviolet)](#)
 [![GitHub Release](https://img.shields.io/github/v/release/Inetum-Poland/add2abm)](https://github.com/Inetum-Poland/add2abm/releases)
 [![Shell](https://img.shields.io/badge/shell-bash-green)](#)
 

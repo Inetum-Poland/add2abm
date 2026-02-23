@@ -62,7 +62,7 @@ It is used to:
 Run **from macOS Recovery only**:
 
 1. Boot into macOS Recovery
-2. Open **Utilities → Terminal**
+2. Open **Utilities → Terminal** (or use ⌘⇧T)
 3. Execute the script from a trusted source. The following command provides the shortest command for convenient typing in Recovery Terminal:
 ```sh
 sh <(curl -s add2abm.inetum.zone)
@@ -112,7 +112,7 @@ The script operates in two modes:
 2. Hold Touch ID/power button to boot into _Options_ (macOS Recovery)
 3. Authenticate as volume owner
 4. Connect to network (if not connected)
-5. Open **Utilities → Terminal**
+5. Open **Utilities → Terminal** (or use ⌘⇧T)
 6. Execute the script to backup user records and reboot
 7. Unlock disk upon boot, if encrypted
 8. Proceed in Setup Assistant to _Country & Region_ step
@@ -122,7 +122,7 @@ The script operates in two modes:
 12. Hold Touch ID/power button to boot into _Options_ (macOS Recovery) once again
 13. Authenticate as volume owner
 14. Connect to network (if not connected)
-15. Open **Utilities → Terminal**
+15. Open **Utilities → Terminal** (or use ⌘⇧T)
 16. Execute the script again to restore user records from backup and reboot
 17. Unlock disk upon boot, if encrypted
 18. Agree to macOS _Terms and Conditions_
@@ -137,6 +137,19 @@ The script operates in two modes:
 - Not suitable for unattended or automated execution
 - Depends on Apple’s current Setup Assistant and ABM behavior
 - Future macOS versions may affect functionality
+
+---
+
+## Troubleshooting
+
+If the script does not behave as expected, you can enable tracing to run it in a verbose mode for debugging:
+```sh
+sh -x <(curl -s add2abm.inetum.zone)
+```
+or if you’re hosting it yourself:
+```sh
+sh -x <(curl -s script_hosting_fqdn/add2abm.sh)
+```
 
 ---
 

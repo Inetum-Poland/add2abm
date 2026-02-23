@@ -30,7 +30,6 @@ read -r ANSWER
 case "${ANSWER}" in
 	[Yy]*)
 		unset ANSWER
-		echo
 		;;
 	*) exit 0 ;;
 esac
@@ -46,12 +45,12 @@ DATA_VOLUME="Macintosh HD - Data"
 
 ! grep -q "${DATA_VOLUME}" <<<"$(diskutil list)" && DATA_VOLUME="Data"
 if ! diskutil mount "${DATA_VOLUME}" &>/dev/null; then
-	printf '\nPlease, provide SecureToken–enabled user password or a FileVault Personal Recovery Key to unlock Data volume…'
+	printf '\nPlease, provide SecureToken–enabled user password or a FileVault Personal Recovery Key to unlock Data volume…\n'
 	diskutil apfs unlockVolume "${DATA_VOLUME}"
 fi
 
 if [[ ! -d "${USERS_PATH}" ]]; then
-	printf 'Data volume still locked or path does not exist. Terminating…'
+	printf 'Data volume still locked or path does not exist. Terminating…\n'
 	exit 1
 fi
 
@@ -59,23 +58,24 @@ fi
 
 # Check for any .bak files:
 if ls "${USERS_PATH}"/*.bak &>/dev/null; then
-	printf '[*] Found .bak files. Restoring…'
+	printf '\n[*] Found .bak files. Restoring…\n'
 	for BACKUP_FILE in "${USERS_PATH}"/*.bak; do
 		[ -e "${BACKUP_FILE}" ] || continue
 		mv -v "${BACKUP_FILE}" "${BACKUP_FILE%.bak}.plist"
 	done
 
-	printf '\n[*] Restoring AppleSetupDone…'
+	printf '\n[*] Restoring AppleSetupDone…\n'
 	touch "${ASD_FILE}"
 	chmod 400 "${ASD_FILE}"
 
 	printf "\n[✓] Restore complete. Note that you’ll have to agree to Terms & Conditions again.\n"
 
-	printf 'Would you like to restart to macOS now? (y/n): '
+	printf '\nWould you like to restart to macOS now? (y/n): '
 	read -r ANSWER
 	case "${ANSWER}" in
 		[Yy]*)
 			printf 'Performing restart…'
+			sleep 0.5
 			reboot
 			;;
 	esac
@@ -86,7 +86,7 @@ fi
 # BACKUP: ——————————————————————————————————————————————————————————————————————————————————————————
 
 # No .bak files found — backup eligible .plist files:
-printf "[*] No .bak files found. Backing up local users’ .plist files…"
+printf "\n[*] No .bak files found. Backing up local users’ .plist files…\n"
 
 for USER_FILE in "${USERS_PATH}"/*.plist; do
 	# Skip files starting with underscore:
@@ -100,22 +100,23 @@ for USER_FILE in "${USERS_PATH}"/*.plist; do
 
 	# Check if UID is greater than 500:
 	if ((USER_UID > 500)); then
-		printf 'Backing up "%s" (UID: %s)…' "$(basename "${USER_FILE%.plist}")" "${USER_UID}"
+		printf 'Backing up "%s" (UID: %s)…\n' "$(basename "${USER_FILE%.plist}")" "${USER_UID}"
 		mv -v "${USER_FILE}" "${USER_FILE%.plist}.bak"
 		# place your action here if needed
 	fi
 done
 
-printf '\n[*] Removing AppleSetupDone…'
+printf '\n[*] Removing AppleSetupDone…\n'
 rm -f "${ASD_FILE}"
 
 printf '\n[✓] Backup complete. macOS Setup Assistant will now open upon drive unlock.\n'
 
-printf 'Would you like to restart to macOS now? (y/n): '
+printf '\nWould you like to restart to macOS now? (y/n): '
 read -r ANSWER
 case "${ANSWER}" in
 	[Yy]*)
 		printf 'Performing restart…'
+		sleep 0.5
 		reboot
 		;;
 esac

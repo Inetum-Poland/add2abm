@@ -6,6 +6,7 @@
 [![MDM: Agnostic](https://img.shields.io/badge/MDM-agnostic-blueviolet)](#)
 [![GitHub Release](https://img.shields.io/github/v/release/Inetum-Poland/add2abm)](https://github.com/Inetum-Poland/add2abm/releases)
 [![Shell](https://img.shields.io/badge/shell-bash-green)](#)
+[![Demo](https://img.shields.io/badge/demo-video-red)](https://www.youtube.com/watch?v=DvAA_sUNB4U)
 
 **Add2ABM is a macOS recovery-time utility script created by Inetum Poland that re-triggers Setup Assistant to allow an already configured Mac to be added to Apple Business Manager[^1] (ABM) or Apple School Manager[^2] (ASM) without erasing the disk.**
 
@@ -87,6 +88,17 @@ Running the script from a logged–in macOS session is **not supported**.
 > curl -s script_hosting_fqdn/add2abm|sha256
 > ```
 > You can find the latest script checksums in [Releases](https://github.com/Inetum-Poland/add2abm/releases).
+
+---
+
+## Demo
+<details>
+<summary>See Add2ABM in action 🎬</summary>
+ 
+
+[![Add2ABM Demo](https://img.youtube.com/vi/DvAA_sUNB4U/maxresdefault.jpg)](https://www.youtube.com/watch?v=DvAA_sUNB4U)
+
+</details>
 
 ---
 

@@ -36,6 +36,13 @@ esac
 
 # PREREQUISITES: ———————————————————————————————————————————————————————————————————————————————————
 
+# Check for Find My Mac (FMM) Token in NVRAM:
+if nvram -p | grep -q "fmm-mobileme-token-proxy"; then
+    printf '\n[!] ERROR: Find My Mac is currently ACTIVE on this device.\n'
+    printf '    Please disable Find My Mac in System Settings before running this script.\n'
+    exit 1
+fi
+
 DB_PATH="/Volumes/Macintosh HD/var/db"
 ASD_FILE="${DB_PATH}/.AppleSetupDone"
 USERS_PATH="${DB_PATH}/dslocal/nodes/Default/users"

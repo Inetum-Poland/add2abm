@@ -17,8 +17,8 @@
 # limitations under the License.
 
 # Author: Bartłomiej Sojka
-# Revision: 20250805
-REVISION=20250805
+# Revision: 20260325
+REVISION=20260325
 
 # Usage: sh <(curl -s add2abm.inetum.zone)
 #        sh <(curl -s script_hosting_fqdn/add2abm)
@@ -38,10 +38,14 @@ esac
 
 # Check for Find My Mac (FMM) Token in NVRAM:
 if nvram -p | grep -q "fmm-mobileme-token-proxy"; then
-	printf '\n[!] ERROR: Find My Mac is currently ACTIVE on this device.\n'
-	printf '    Please disable Find My Mac in System Settings before running this script.\n'
+	printf '\n[!] WARNING: Find My Mac is currently ACTIVE on this device.\n'
+	printf '             Please disable Find My Mac in System Settings before running this script.\n'
 	exit 1
 fi
+
+BASE="/Volumes/Macintosh HD"
+XMLLINT="${BASE}/usr/bin/xmllint"
+MMA_PLIST="Library/Preferences/MobileMeAccounts.plist"
 
 DB_PATH="/Volumes/Macintosh HD/var/db"
 ASD_FILE="${DB_PATH}/.AppleSetupDone"
@@ -58,7 +62,7 @@ fi
 
 if [[ ! -d "${USERS_PATH}" ]]; then
 	printf 'Data volume still locked or path does not exist. Terminating…\n'
-	exit 1
+	exit 2
 fi
 
 # RESTORE: —————————————————————————————————————————————————————————————————————————————————————————
@@ -89,6 +93,50 @@ if ls "${USERS_PATH}"/*.bak &>/dev/null; then
 
 	exit 0
 fi
+
+# DATA LOSS PREVENTION: ————————————————————————————————————————————————————————————————————————————
+
+for USER_HOME in "${BASE}/Users"/*; do
+	USER="$(basename "${USER_HOME}")"
+	[[ "${USER}" == "Shared" ]] && continue
+
+	MMA_PLIST_PATH="${USER_HOME}/${MMA_PLIST}"
+	[[ -f "${MMA_PLIST_PATH}" ]] || continue
+
+	STATUS=$(
+		plutil -extract Accounts.0.Services xml1 -o - "${MMA_PLIST_PATH}" 2>/dev/null |
+			"${XMLLINT}" --xpath 'name(//dict[string[preceding-sibling::key[1]="Name"]="FIND_MY_MAC"]/*[preceding-sibling::key[1]="Enabled"][1])' - 2>/dev/null
+	)
+
+	if [[ "${STATUS}" == "true" ]]; then
+		printf '\n[!] WARNING: Find My Mac is currently ENABLED for user "%s".\n' "${USER}"
+		printf '             Operation aborted to prevent ABM/ASM assignment failure and data loss.\n'
+		printf '             Please disable Find My Mac in System Settings before running this script.\n'
+		exit 3
+	fi
+done
+
+if [[ -f "${DB_PATH}/ConfigurationProfiles/Settings/.cloudConfigRecordFound" ]]; then
+	printf '\n[!] WARNING: Cloud config record was found. This Mac may already be assigned.\n'
+	printf '             Operation aborted to prevent ABM/ASM assignment failure and data loss.\n'
+	exit 4
+fi
+
+if [[ -f "${DB_PATH}/ConfigurationProfiles/Settings/.cloudConfigHasActivationRecord" ]]; then
+	printf '\n[!] WARNING: Cloud config activation record flag was found. This Mac may already be assigned.\n'
+	printf '             Please verify it in any of your ABM/ASM instances before proceeding.\n'
+fi
+
+printf '\n[*] Find My Mac does not appear to be enabled for any user.\n'
+printf '    IMPORTANT: Remember not to use Shut Down button in case of any assignment failure (Cmd+Q is fine)!\n'
+printf '    Would you like to proceed? (y/n): '
+read -r ANSWER
+case "${ANSWER}" in
+	[Yy]*)
+		unset ANSWER
+		;;
+	*) exit 0 ;;
+esac
 
 # BACKUP: ——————————————————————————————————————————————————————————————————————————————————————————
 

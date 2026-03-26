@@ -35,7 +35,53 @@ It is used to:
 > Improper use may lead to system misconfiguration. While no data is deleted and all changes are reversible, a full backup before use is of course recommended.
 
 > [!CAUTION]
-> **Do not proceed beyond the _Country & Region_ selection screen** when Setup Assistant appears after running Add2ABM.
+> **Do not use this script on a Mac with User Activation Lock enabled or one already added to ABM/ASM**.
+> Proceeding will inevitably lead to assignment failure which can put your data at risk.
+>
+> In fact, if for whatever reason the assignment fails, **do not use _Shut Down_** button in the bottom right corner of the Setup Assistant.
+> Doing so will reset the activation status of the device and will initiate _Erase All Contents & Settings_ system wipe on next boot, even if you’d try to go straight to Recovery.
+> **Use Command+Q (⌘Q)** and then Shut Down in modal window instead, or just hold the Power button to power off and potentially try again.
+>
+> The script has additional checks to prevent putting your data at risk, but you’re the one in control.
+>
+> <details>
+> <summary>Error examples</summary>
+>  
+>
+> Activation Lock:
+> ```
+> Desc.  : Provisional Enrollment failed.
+> Sugg.  : The device failed to request configuration from the cloud.
+> Domain : DEPCloudConfigErrorDomain
+> Code.  : 0x80EF (33007)
+>   Domain : MCCloudConfigurationErrorDomain
+>   Code.  : 0x84D0 (34000)
+> ```
+> Already assigned:
+> ```
+> Desc.  : Provisional Enrollment failed.
+> Sugg.  : This device is already enrolled in the Device Enrollment Program.
+> Domain : DEPCloudConfigErrorDomain
+> Code.  : 0x80EF (33007)
+>   Domain : MCCloudConfigurationErrorDomain
+>   Code.  : 0x80FA (33018)
+> ```
+> Network issue:
+> ```
+> Desc.  : Transport could not connect.
+> Domain : Catalyst.error
+> Code.  : 0xCA (202)
+>   Desc.  : Broadcast primitives invalidated
+>   Domain : DeviceManagementTools.error
+>   Code.  : 0x1E (30)
+>     Desc.  : Client Disconnected
+>     Domain : DeviceManagementTools.error
+>     Code.  : 0x5B (91)
+> ```
+> </details>
+
+> [!CAUTION]
+> **Do not proceed beyond the _Select Your Country or Region_ screen** when Setup Assistant appears after running Add2ABM.
 > Proceeding further may result in:
 >  - duplicate or conflicting configurations,
 >  - unexpected behavior on an already configured system.
@@ -127,7 +173,7 @@ The script operates in two modes:
 5. Open **Utilities → Terminal** (or use ⌘⇧T)
 6. Execute the script to backup user records and reboot
 7. Unlock disk upon boot, if encrypted
-8. Proceed in Setup Assistant to _Country & Region_ step
+8. Proceed in Setup Assistant to _Select Your Country or Region_ step
 9. Bring the iPhone running _Apple Configurator_ in close proximity to the Mac
 10. Add the computer to the MDM server of choice in ABM/ASM
 11. Shut down Mac on success (_Mac Added_ confirmation)

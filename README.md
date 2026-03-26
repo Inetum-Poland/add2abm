@@ -45,7 +45,7 @@ It is used to:
 > The script has additional checks to prevent putting your data at risk, but you’re the one in control.
 >
 > <details>
-> <summary>Error examples</summary>
+> <summary>ABM/ASM assignment error examples</summary>
 >  
 >
 > Activation Lock:
@@ -89,13 +89,14 @@ It is used to:
 > The sole purpose of re–triggering Setup Assistant is to allow **ABM/ASM assignment**, not to reconfigure the system.
 
 > [!NOTE]
-> Re–triggering the Setup Assistant resets end users’ consent to macOS _Terms and Conditions_ and these will have to be accepted again upon disabling the Setup Assistant.
+> Re–triggering the Setup Assistant resets end user’s consent to macOS Software License Agreement (_Terms and Conditions_ step). Add2ABM re–confirms it again in Restore mode.
 
 ---
 
 ## Requirements
 
 - Apple silicon Mac or Intel Mac with T2 Security Chip
+- Activation Lock disabled (at least temporarily)
 - Access to **macOS Recovery** (make sure you have the Recovery Lock password, if set)
 - Ability to unlock the Data volume using:
   - SecureToken-enabled user password, or
@@ -160,30 +161,31 @@ The script operates in two modes:
 - **Restore mode** (when backups exist):
   - Restores user records (`*.bak` → `*.plist`)
   - Recreates `.AppleSetupDone`
+  - Removes `.AppleSetupTermsOfService` to re–confirm macOS SLA
   - Performs a reboot to return the system to normal operation
 
 ---
 
 ## Complete Add2ABM procedure in 20 easy steps
 
-1. Shut down Mac
-2. Hold Touch ID/power button to boot into _Options_ (macOS Recovery)
-3. Authenticate as volume owner
-4. Connect to network (if not connected)
-5. Open **Utilities → Terminal** (or use ⌘⇧T)
-6. Execute the script to backup user records and reboot
-7. Unlock disk upon boot, if encrypted
-8. Proceed in Setup Assistant to _Select Your Country or Region_ step
-9. Bring the iPhone running _Apple Configurator_ in close proximity to the Mac
-10. Add the computer to the MDM server of choice in ABM/ASM
-11. Shut down Mac on success (_Mac Added_ confirmation)
-12. Hold Touch ID/power button to boot into _Options_ (macOS Recovery) once again
-13. Authenticate as volume owner
-14. Connect to network (if not connected)
-15. Open **Utilities → Terminal** (or use ⌘⇧T)
-16. Execute the script again to restore user records from backup and reboot
-17. Unlock disk upon boot, if encrypted
-18. Agree to macOS _Terms and Conditions_
+1. Disable Activation Lock, if currently enabled
+2. Shut down Mac
+3. Hold Touch ID/power button to boot into _Options_ (macOS Recovery)
+4. Authenticate as volume owner
+5. Connect to network (if not connected)
+6. Open **Utilities → Terminal** (or use ⌘⇧T)
+7. Execute the script to backup user records and reboot
+8. Unlock disk upon boot, if encrypted
+9. Proceed in Setup Assistant to _Select Your Country or Region_ step
+10. Bring the iPhone running _Apple Configurator_ in close proximity to the Mac
+11. Add the computer to the MDM server of choice in ABM/ASM
+12. Shut down Mac on success (_Mac Added_ confirmation)
+13. Hold Touch ID/power button to boot into _Options_ (macOS Recovery) once again
+14. Authenticate as volume owner
+15. Connect to network (if not connected)
+16. Open **Utilities → Terminal** (or use ⌘⇧T)
+17. Execute the script again to restore user records from backup and reboot
+18. Unlock disk upon boot, if encrypted
 19. Log in to the local user account
 20. Run `sudo profiles renew -type enrollment` (local admin account context required) in Terminal to force Automated Device Enrollment workflow from your MDM
 

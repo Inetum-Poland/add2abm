@@ -49,6 +49,7 @@ MMA_PLIST="Library/Preferences/MobileMeAccounts.plist"
 
 DB_PATH="/Volumes/Macintosh HD/var/db"
 ASD_FILE="${DB_PATH}/.AppleSetupDone"
+TOS_FILE="${DB_PATH}/.AppleSetupTermsOfService"
 USERS_PATH="${DB_PATH}/dslocal/nodes/Default/users"
 DATA_VOLUME="Macintosh HD - Data"
 
@@ -79,7 +80,7 @@ if ls "${USERS_PATH}"/*.bak &>/dev/null; then
 	touch "${ASD_FILE}"
 	chmod 400 "${ASD_FILE}"
 
-	printf "\n[✓] Restore complete. Note that you’ll have to agree to Terms & Conditions again.\n"
+	[[ -f "${TOS_FILE}" ]] && rm -f "${TOS_FILE}" && printf "[*] Re–confirming the user’s acceptance of the macOS Software License Agreement…\n"
 
 	printf '\nWould you like to restart to macOS now? (y/n): '
 	read -r ANSWER

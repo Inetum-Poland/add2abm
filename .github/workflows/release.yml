@@ -90,7 +90,7 @@ jobs:
           aws s3 cp "${{ env.SCRIPT_NAME }}.sha256" "s3://${{ env.HOSTING_URL }}/${{ env.SCRIPT_NAME }}.sha256"
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: ${{ env.PROJECT_NAME }} ${{ env.RELEASE_TAG }}
           tag_name: ${{ env.RELEASE_TAG }}

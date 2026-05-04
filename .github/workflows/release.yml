@@ -77,7 +77,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           excludes: draft
 
-      - uses: Moulick/configure-multiple-aws-roles@eed5472a61379531eea44b1b4e1d9500a6e663bb # v6.0.0
+      - uses: Moulick/configure-multiple-aws-roles@4ffcf26856aa9c08a3fb867e784ecabf5244af7a # v6.1.0
         with:
           role-to-assume: arn:aws:iam::932459504670:role/com.inetum.github.oidc
           role-session-name: ${{ github.run_id }}-${{ github.sha }}

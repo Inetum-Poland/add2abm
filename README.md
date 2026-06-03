@@ -8,7 +8,7 @@
 [![Shell](https://img.shields.io/badge/shell-bash-green)](#)
 [![Demo](https://img.shields.io/badge/demo-video-red)](https://www.youtube.com/watch?v=DvAA_sUNB4U)
 
-**Add2ABM is a macOS recovery-time utility script created by Inetum Poland that re-triggers Setup Assistant to allow an already configured Mac to be added to Apple Business Manager[^1] (ABM) or Apple School Manager[^2] (ASM) without erasing the disk.**
+**Add2ABM is a macOS recovery-time utility script created by Inetum Poland that re-triggers Setup Assistant to allow an already configured Mac to be added to Apple Business[^1] (formerly Apple Business Manager[^2], ABM) — or Apple School Manager[^3] (ASM) without erasing the disk.**
 
 It temporarily removes the `.AppleSetupDone` flag, as well as local user records on the **Data** volume, working around the limitations introduced in macOS Sonoma, forcing the system to present Setup Assistant on next boot. This allows the device to be (re)assigned in ABM or ASM for Automated Device Enrollment (ADE) workflows without erasing the disk.
 
@@ -22,12 +22,13 @@ This tool is intended **exclusively for system administrators, support engineers
 
 It is used to:
 
-- retroactively add a Mac to ABM[^1]/ASM[^2] with [Apple Configurator](https://apps.apple.com/app/apple-configurator/id1588794674),
+- retroactively add a Mac to ABM[^1][^2]/ASM[^3] with [Apple Configurator](https://apps.apple.com/app/apple-configurator/id1588794674),
 - enable Automated Device Enrollment (ADE) on an already configured Mac,
 - avoid wiping a device due to data retention requirements.
 
-[^1]: To learn more about adding devices using Apple Configurator to Apple Business Manager, visit the [Apple Business Manager User Guide](https://support.apple.com/guide/apple-business-manager/axm200a54d59/web).
-[^2]: To learn more about adding devices using Apple Configurator to Apple School Manager, visit the [Apple School Manager User Guide](https://support.apple.com/guide/apple-school-manager/axm200a54d59/web).
+[^1]: To learn more about adding devices using Apple Configurator to Apple Business, visit the [Apple Business User Guide](https://support.apple.com/guide/business/welcome/web) (currently available in a limited set of languages).
+[^2]: To learn more about adding devices using Apple Configurator to Apple Business Manager, visit the [Apple Business Manager User Guide](https://support.apple.com/guide/apple-business-manager/axm200a54d59/web).
+[^3]: To learn more about adding devices using Apple Configurator to Apple School Manager, visit the [Apple School Manager User Guide](https://support.apple.com/guide/apple-school-manager/axm200a54d59/web).
 
 > [!WARNING]
 > **End users should never run this script themselves.**

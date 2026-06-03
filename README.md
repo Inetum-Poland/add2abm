@@ -8,7 +8,7 @@
 [![Shell](https://img.shields.io/badge/shell-bash-green)](#)
 [![Demo](https://img.shields.io/badge/demo-video-red)](https://www.youtube.com/watch?v=DvAA_sUNB4U)
 
-**Add2ABM is a macOS recovery-time utility script created by Inetum Poland that re-triggers Setup Assistant to allow an already configured Mac to be added to Apple Business[^1] (formerly Apple Business Manager[^2], ABM) — or Apple School Manager[^3] (ASM) without erasing the disk.**
+**Add2ABM is a macOS recovery-time utility script created by Inetum Poland that re-triggers Setup Assistant to allow an already configured Mac to be added to Apple Business[^1] (formerly Apple Business Manager[^2], ABM) or Apple School Manager[^3] (ASM) without erasing the disk.**
 
 It temporarily removes the `.AppleSetupDone` flag, as well as local user records on the **Data** volume, working around the limitations introduced in macOS Sonoma, forcing the system to present Setup Assistant on next boot. This allows the device to be (re)assigned in ABM or ASM for Automated Device Enrollment (ADE) workflows without erasing the disk.
 

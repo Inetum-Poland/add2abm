@@ -17,8 +17,8 @@
 # limitations under the License.
 
 # Author: Bartłomiej Sojka
-# Revision: 20260325
-REVISION=20260325
+# Revision: 20260706
+REVISION=20260706
 
 # Usage: sh <(curl -s add2abm.inetum.zone)
 #        sh <(curl -s script_hosting_fqdn/add2abm)
@@ -145,9 +145,6 @@ esac
 printf "\n[*] No .bak files found. Backing up local users’ .plist files…\n"
 
 for USER_FILE in "${USERS_PATH}"/*.plist; do
-	# Skip files starting with underscore:
-	[[ "$(basename "${USER_FILE}")" == _* ]] && continue
-
 	# Extract the first UID from the plist:
 	USER_UID=$(plutil -extract uid.0 raw "${USER_FILE}" 2>/dev/null)
 
